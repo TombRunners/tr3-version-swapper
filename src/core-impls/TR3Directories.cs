@@ -7,6 +7,11 @@ namespace TR3_Version_Swapper
     /// <inheritdoc cref="IDirectories"/>
     internal class TR3Directories : IDirectories
     {
+        /// <summary>
+        ///     Folder containing each packaged version.
+        /// </summary>
+        public readonly string Versions;
+        
         /// <inheritdoc/>
         public string Game { get; }
 
@@ -14,6 +19,7 @@ namespace TR3_Version_Swapper
         {
             string root = Path.GetFullPath(Directory.GetCurrentDirectory());
             Game = Directory.GetParent(root).FullName;
+            Versions = Path.Combine(root, "versions");
         }
     }
 }
