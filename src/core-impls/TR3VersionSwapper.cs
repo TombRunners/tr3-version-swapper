@@ -29,25 +29,8 @@ namespace TR3_Version_Swapper
             {Version.Japanese, "Japanese"},
         };
 
-        private static readonly Dictionary<Version, List<string>> ExcessFiles = new Dictionary<Version, List<string>>
-        {
-            {
-                Version.International,
-                new List<string> { 
-                    "Crsh_Eng.rpl",
-                    "Intr_Eng.rpl",
-                    "Sail_Eng.rpl"
-                } 
-            },
-            {
-                Version.Japanese,
-                new List<string> { 
-                    "Crsh_Jap.rpl",
-                    "Intr_Jap.rpl",
-                    "Sail_Jap.rpl"
-                } 
-            }
-        };
+        private static readonly Dictionary<Version, List<string>> ExcessVersionFiles = new Dictionary<Version, List<string>>();
+        private static readonly Dictionary<Version, List<string>> ExcessVersionDirectories = new Dictionary<Version, List<string>>();
 
         protected override TRVSProgramData ProgramData { get; }
         protected override TRVSProgramManager ProgramManager { get; }
@@ -58,6 +41,31 @@ namespace TR3_Version_Swapper
             ProgramData = programData;
             ProgramManager = programManager;
             Directories = directories;
+
+            ExcessVersionFiles.Add(
+                Version.International,
+                new List<string> { 
+                    Path.Combine(Directories.Game, "fmv", "Crsh_Jap.rpl"),
+                    Path.Combine(Directories.Game, "fmv", "Intr_Jap.rpl"),
+                    Path.Combine(Directories.Game, "fmv", "Sail_Jap.rpl"),
+                    Path.Combine(Directories.Game, "support", "Readme_uk.txt"),
+                    Path.Combine(Directories.Game, "support", "Support_uk.htm"),
+                }
+            );
+            ExcessVersionFiles.Add(
+                Version.Japanese,
+                new List<string> { 
+                    Path.Combine(Directories.Game, "fmv", "Crsh_Eng.rpl"),
+                    Path.Combine(Directories.Game, "fmv", "Intr_Eng.rpl"),
+                    Path.Combine(Directories.Game, "fmv", "Sail_Eng.rpl")
+                }
+            );
+            ExcessVersionDirectories.Add(
+                Version.International,
+                new List<string> { 
+                    Path.Combine(Directories.Game, "support", "drivers")
+                }
+            );
         }
 
         /// <inheritdoc/>
@@ -100,16 +108,16 @@ namespace TR3_Version_Swapper
             Version selectedVersion = VersionPrompt();
             string selectedVersionText = SelectionDictionary[selectedVersion];
 
+            // Copy files from selected version into installation folder.
             string versionDir = Path.Combine(Directories.Versions, selectedVersionText);
-
             TryCopyingDirectory(versionDir, Directories.Game);
             ProgramData.NLogger.Info($"Installed {selectedVersionText} successfully.");
-            if (!TryDeletingFiles(ExcessFiles[selectedVersion]))
-            {
-                Console.WriteLine("Failed to delete excess files from old installation.");
-                Console.WriteLine("This does not affect your version's behavior or leaderboard capatibility.");
-            }
-            ProgramData.NLogger.Info($"Deleted excess files successfully.");
+            
+            // Cleanup possibly remaining files that are not part of the selected version.
+            DeleteExcessFiles(selectedVersion);
+            DeleteExcessDirectories(selectedVersion);
+
+            // Success!
             ConsoleIO.PrintHeader($"{selectedVersionText} successfully installed!", foregroundColor: ConsoleColor.Green);
             Console.WriteLine();
         }
@@ -124,6 +132,48 @@ namespace TR3_Version_Swapper
             {
                 string name = SelectionDictionary[(Version) i];
                 Console.WriteLine($"\t{i}: {name}");
+            }
+        }
+
+        /// <summary>
+        ///     If applicable, deletes excess files that are not part of the version just installed.
+        /// </summary>
+        /// <param name="newlyInstalledVersion">The newly-installed <see cref="Version"/></param>
+        private void DeleteExcessFiles(Version newlyInstalledVersion)
+        {
+            if (ExcessVersionFiles.TryGetValue(newlyInstalledVersion, out List<string> excessFilesToDeleteForThisVersion))
+            {
+                if (!TryDeletingFiles(excessFilesToDeleteForThisVersion))
+                {
+                    Console.WriteLine("Failed to delete excess files from old installation.");
+                    Console.WriteLine("This does not affect your version's behavior or leaderboard compatibility.");
+                }
+                ProgramData.NLogger.Info($"Deleted excess files successfully.");
+            }
+            else
+            {
+                ProgramData.NLogger.Info($"No excess files to delete.");
+            }
+        }
+
+        /// <summary>
+        ///     If applicable, deletes excess directories that are not part of the version just installed.
+        /// </summary>
+        /// <param name="newlyInstalledVersion">The newly-installed <see cref="Version"/></param>
+        private void DeleteExcessDirectories(Version newlyInstalledVersion)
+        {
+            if (ExcessVersionDirectories.TryGetValue(newlyInstalledVersion, out List<string> excessDirsToDelete))
+            {
+                if (!TryDeletingDirectories(excessDirsToDelete, recursive: true))
+                {
+                    Console.WriteLine("Failed to delete excess directories from old installation.");
+                    Console.WriteLine("This does not affect your version's behavior or leaderboard compatibility.");
+                }
+                ProgramData.NLogger.Info($"Deleted excess directories successfully.");
+            }
+            else
+            {
+                ProgramData.NLogger.Info($"No excess directories to delete.");
             }
         }
     }
