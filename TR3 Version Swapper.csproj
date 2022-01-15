@@ -8,7 +8,7 @@
     <ProjectGuid>{F85CE183-ACD8-4A3B-85E1-A8479889F01D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>TR3_Version_Swapper</RootNamespace>
-    <AssemblyName>TR3 Version Swapper</AssemblyName>
+    <AssemblyName>tr3-version-swapper</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -287,8 +287,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="TRVS.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\TRVS.Core.1.0.1\lib\netstandard2.0\TRVS.Core.dll</HintPath>
+    <Reference Include="TRVS.Core">
+      <HintPath>..\core\bin\Release\netstandard2.0\TRVS.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
