@@ -48,13 +48,14 @@ namespace TR3_Version_Swapper
                     Path.Combine(Directories.Game, "fmv", "Crsh_Jap.rpl"),
                     Path.Combine(Directories.Game, "fmv", "Intr_Jap.rpl"),
                     Path.Combine(Directories.Game, "fmv", "Sail_Jap.rpl"),
-                    Path.Combine(Directories.Game, "support", "Readme_uk.txt"),
-                    Path.Combine(Directories.Game, "support", "Support_uk.htm"),
+                    Path.Combine(Directories.Game, "support", "info", "Readme_uk.txt"),
+                    Path.Combine(Directories.Game, "support", "info", "Support_uk.htm")
                 }
             );
             ExcessVersionFiles.Add(
                 Version.Japanese,
                 new List<string> { 
+                    Path.Combine(Directories.Game, "installscript.vdf"),
                     Path.Combine(Directories.Game, "fmv", "Crsh_Eng.rpl"),
                     Path.Combine(Directories.Game, "fmv", "Intr_Eng.rpl"),
                     Path.Combine(Directories.Game, "fmv", "Sail_Eng.rpl")
